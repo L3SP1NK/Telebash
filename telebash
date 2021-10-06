@@ -12,7 +12,7 @@ CYAN="\e[36m"
 RED="\e[31m"
 BOLD="\e[1m"
 
-TELEBASH_PATH="/opt/My-Repo/Telebash" ## << Change this
+TELEBASH_PATH="${HOME}/.telebash" ## << Change this
 TOKEN_CONFIG="${TELEBASH_PATH}/config/telegram_token.txt"
 
 if [[ -f ${TOKEN_CONFIG} ]]
