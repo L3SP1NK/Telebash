@@ -4,11 +4,11 @@ Bash script to send messages on telegram with bot.
 
 You don't have a bot yet? It's super easy:
 
-1). Create one directly on Telegram with @botfather.
+1). Create one directly in Telegram with @botfather.
 
 2). Add your bot to the group you want to talk to.
 
-3). Get your group ID using: curl -s "https://api.telegram.org/bot<bot key>/getUpdates" (If it doesn't work, you may need to remove then re-add your bot to the group).
+3). Get your group ID using: curl -s "https://api.telegram.org/bot<bot key>/getUpdates"
 
 4). Create a telegram_token.txt file inside the "config" directory with: TELEGRAM_TOKEN="<your token>".
 
