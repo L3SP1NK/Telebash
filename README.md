@@ -12,7 +12,7 @@ You don't have a bot yet? It's super easy:
 
 4). Create a telegram_token.txt file inside the "config" directory with: TELEGRAM_TOKEN="<your token>".
 
-5). Create a telegram_group-id.txt file inside the "config" directory with: GROUP_ID="<your token>".
+5). Create a telegram_group-id.txt file inside the "config" directory with: CHAT_ID="<your chat id>".
 
 Information on the Telegram API here -> https://core.telegram.org/bots/api
 
