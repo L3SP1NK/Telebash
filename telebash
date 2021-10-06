@@ -12,22 +12,26 @@ CYAN="\e[36m"
 RED="\e[31m"
 BOLD="\e[1m"
 
-TOKEN_CONFIG="config/telegram_token.txt"
+TELEBASH_PATH="/opt/My-Repo/Telebash" ## << Change this
+TOKEN_CONFIG="${TELEBASH_PATH}/config/telegram_token.txt"
+
 if [[ -f ${TOKEN_CONFIG} ]]
 	then
-		source config/telegram_token.txt
+		source ${TELEBASH_PATH}/config/telegram_token.txt
 		[[ ${TELEGRAM_TOKEN} == "" ]] && echo -e "\n${RED}${BOLD} Token${RESET_COLOR}${RED} config file found but contain nothing!\n Exiting...${RESET_COLOR}\n"
 	else
 		echo -e "\n${RED} Token is missing!${RESET_COLOR}\n Get one with ${CYAN}${BOLD}@botfather${RESET_COLOR} on Telegram.\n" && exit 1
 fi
 
 CHAT_CONFIG="config/telegram_chat-id.txt"
+CHAT_CONFIG="${TELEBASH_PATH}/config/telegram_chat-id.txt"
+
 if [[ -f ${CHAT_CONFIG} ]]
 	then
-		source config/telegram_chat-id.txt
+		source ${TELEBASH_PATH}/config/telegram_chat-id.txt
 		[[ ${TELEGRAM_CHAT_ID} == "" ]] && echo -e "\n${RED}${BOLD} Chat${RESET_COLOR}${RED} config file found but contain nothing!\n Exiting...${RESET_COLOR}\n" && exit 1
 	else
-		echo -e "\n${RED} Group ID is missing!${RESET_COLOR}\n Get one with: 'curl -s https://api.telegram.org/bot<bot key>/getUpdates'\n"
+		echo -e "\n${RED} Chat ID is missing!${RESET_COLOR}\n Get one with: 'curl -s https://api.telegram.org/bot<bot key>/getUpdates'\n"
 		exit 1
 fi
 
@@ -36,7 +40,7 @@ TELEGRAM_API="https://api.telegram.org/bot${TELEGRAM_TOKEN}"
 function DISPLAY_HELP()
 {
 	echo -e "\n"
-	[[ -f config/logo.txt ]] && cat config/logo.txt
+	[[ -f ${TELEBASH_PATH}/config/logo.txt ]] && cat ${TELEBASH_PATH}/config/logo.txt
 	echo -e "${GREY}${BOLD}  Send messages/documents with your Telegram bot.\n${RESET_COLOR}"
 	echo -e " Usage:"
 	echo -e "	${YELLOW}${BOLD}-c${RESET_COLOR},${YELLOW}${BOLD}  --command${RESET_COLOR}      <command>           (Telegram can't handle large command output)."
