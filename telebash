@@ -1,0 +1,105 @@
+#!/bin/bash
+## Send messages/documents with your Telegram bot.
+
+## TODO:
+## - Sort json output correctly when updating.
+
+RESET_COLOR="\e[0m"
+GREY="\e[37m"
+YELLOW="\e[33m"
+GREEN="\e[32m"
+CYAN="\e[36m"
+RED="\e[31m"
+BOLD="\e[1m"
+
+TOKEN_CONFIG="config/telegram_token.txt"
+if [[ -f ${TOKEN_CONFIG} ]]
+	then
+		source config/telegram_token.txt
+		[[ ${TELEGRAM_TOKEN} == "" ]] && echo -e "\n${RED}${BOLD} Token${RESET_COLOR}${RED} config file found but contain nothing!\n Exiting...${RESET_COLOR}\n"
+	else
+		echo -e "\n${RED} Token is missing!${RESET_COLOR}\n Get one with ${CYAN}${BOLD}@botfather${RESET_COLOR} on Telegram.\n" && exit 1
+fi
+
+CHAT_CONFIG="config/telegram_chat-id.txt"
+if [[ -f ${CHAT_CONFIG} ]]
+	then
+		source config/telegram_chat-id.txt
+		[[ ${TELEGRAM_CHAT_ID} == "" ]] && echo -e "\n${RED}${BOLD} Chat${RESET_COLOR}${RED} config file found but contain nothing!\n Exiting...${RESET_COLOR}\n" && exit 1
+	else
+		echo -e "\n${RED} Group ID is missing!${RESET_COLOR}\n Get one with: 'curl -s https://api.telegram.org/bot<bot key>/getUpdates'\n"
+		exit 1
+fi
+
+TELEGRAM_API="https://api.telegram.org/bot${TELEGRAM_TOKEN}"
+
+function DISPLAY_HELP()
+{
+	echo -e "\n"
+	[[ -f config/logo.txt ]] && cat config/logo.txt
+	echo -e "${GREY}${BOLD}  Send messages/documents with your Telegram bot.\n${RESET_COLOR}"
+	echo -e " Usage:"
+	echo -e "	${YELLOW}${BOLD}-c${RESET_COLOR},${YELLOW}${BOLD}  --command${RESET_COLOR}      <command>           (Telegram can't handle large command output)."
+	echo -e "	${YELLOW}${BOLD}-h${RESET_COLOR},${YELLOW}${BOLD}  --help${RESET_COLOR}                             Display this help."
+	echo -e "	${YELLOW}${BOLD}-u${RESET_COLOR},${YELLOW}${BOLD}  --update${RESET_COLOR}                           Get the latest infos (groups, messages...)."
+	echo -e "	${YELLOW}${BOLD}-t${RESET_COLOR},${YELLOW}${BOLD}  --text${RESET_COLOR}         <text>"
+	echo -e "	${YELLOW}${BOLD}-u${RESET_COLOR},${YELLOW}${BOLD}  --url${RESET_COLOR}          <URL to document>\n"
+}
+
+function SEND_MESSAGE()
+{
+	ENDPOINT="sendMessage"
+	PARSE_MODE="markdown" ## "html" or "markdown"
+	curl -s -d "chat_id=${TELEGRAM_CHAT_ID}&parse_mode=${PARSE_MODE}&text=${TEXT}" ${TELEGRAM_API}/${ENDPOINT} > /dev/null
+}
+
+function SEND_COMMAND_OUTPUT()
+{
+	ENDPOINT="sendMessage"
+	curl -s -d "chat_id=${TELEGRAM_CHAT_ID}&parse_mode=${PARSE_MODE}&text=${COMMAND}" ${TELEGRAM_API}/${ENDPOINT} > /dev/null
+}
+
+function SEND_DOCUMENT()
+{
+	ENDPOINT="sendDocument"
+	curl -s -d "chat_id=${TELEGRAM_CHAT_ID}&document=${DOCUMENT_URL}" ${TELEGRAM_API}/${ENDPOINT} > /dev/null
+}
+
+function GET_UPDATE()
+
+{
+	curl -s "https://api.telegram.org/bot${TELEGRAM_TOKEN}/getUpdates" | jq
+}
+
+REQUIREMENTS="curl jq"
+which ${REQUIREMENTS} > /dev/null
+
+if [[ ${?} -eq "0" ]]
+	then
+		case ${1} in
+			-c|--command)
+				COMMAND=$(${2})
+				SEND_COMMAND_OUTPUT
+				;;
+			-d|--doc)
+				DOCUMENT_URL="${2}"
+				SEND_DOCUMENT
+				;;
+			-h| --help)
+				DISPLAY_HELP
+				;;
+			-t|--text)
+				TEXT="${2}"
+				SEND_MESSAGE
+				;;
+			-u| --update)
+				GET_UPDATE
+				;;
+			*)
+				DISPLAY_HELP
+				;;
+		esac
+	else
+		echo -e "${RED}\n To run this program, you need the following packages installed: ${BOLD}${REQUIREMENTS}${RESET_COLOR}\n${RED} Exiting...${RESET_COLOR}\n"
+		exit 0
+fi
