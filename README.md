@@ -1,8 +1,8 @@
 # Telebash
 
-Bash script to send messages on telegram with bot.
+Bash script to send messages on telegram with a bot.
 
-You don't have a bot yet? It's super easy:
+You don't have bot yet? It's super easy:
 
 1). Create one directly in Telegram with @botfather.
 
