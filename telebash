@@ -33,10 +33,10 @@ function DISPLAY_HELP()
 	echo -e "  To get a chat ID, run this script with the '-u' flag.\n"
 	echo -e " ${UNDERLINE}${BOLD}Options:${RESET_COLOR}"
 	echo -e "  ${YELLOW}${BOLD}-c${RESET_COLOR},${YELLOW}${BOLD}	--command${RESET_COLOR}		<command>			(Telegram can't handle large command output)."
-	echo -e "  ${YELLOW}${BOLD}-d${RESET_COLOR},${YELLOW}${BOLD}	--doc${RESET_COLOR}			<path/URL to document>"
+	echo -e "  ${YELLOW}${BOLD}-d${RESET_COLOR},${YELLOW}${BOLD}	--doc${RESET_COLOR}			<URL to document>		Send a files on the internet."
 	echo -e "  ${YELLOW}${BOLD}-h${RESET_COLOR},${YELLOW}${BOLD}	--help${RESET_COLOR}							Display this help."
 	echo -e "  ${YELLOW}${BOLD}-u${RESET_COLOR},${YELLOW}${BOLD}	--update${RESET_COLOR}						Get the latest infos (groups, messages...)."
-	echo -e "  ${YELLOW}${BOLD}-t${RESET_COLOR},${YELLOW}${BOLD}	--text${RESET_COLOR}			<text>\n"
+	echo -e "  ${YELLOW}${BOLD}-t${RESET_COLOR},${YELLOW}${BOLD}	--text${RESET_COLOR}			<text>				Send a text message.\n"
 }
 
 TELEGRAM_API="https://api.telegram.org/bot${TELEGRAM_TOKEN}"
