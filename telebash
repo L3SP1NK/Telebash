@@ -27,7 +27,6 @@ fi
 DISPLAY_HELP()
 {
 	[[ -f ${TELEBASH_LOGO} ]] && cat ${TELEBASH_LOGO}
-	echo -e " ${ITALIC}${CYAN}Send messages/documents with your Telegram bot.\n${RC}"
 	echo -e " ${UNDERLINE}${BOLD}Usage:${RC}"
 	echo -e "  ./telebash ${GREY}<${RC}options${GREY}> <${RC}chat ID${GREY}> <${RC}command/file/url/text${GREY}>${RC}\n"
 	echo -e "  To get a chat ID, run this script with the '-u' flag.\n"
