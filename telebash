@@ -28,7 +28,7 @@ DISPLAY_HELP()
 {
 	[[ -f ${TELEBASH_LOGO} ]] && cat ${TELEBASH_LOGO}
 	echo -e " ${UNDERLINE}${BOLD}Usage:${RC}"
-	echo -e "  ./telebash ${GREY}<${RC}options${GREY}> <${RC}chat ID${GREY}> <${RC}command/file/url/text${GREY}>${RC}\n"
+	echo -e "  ./telebash ${GREY}<${RC}options${GREY}> <${RC}command/file/url/text${GREY}> <${RC}chat ID${GREY}> ${RC}\n"
 	echo -e "  To get a chat ID, run this script with the '-u' flag.\n"
 	echo -e " ${UNDERLINE}${BOLD}Options:${RC}"
 	echo -e "  ${YELLOW}${BOLD}-c${RC},${YELLOW}${BOLD}	--command${RC}		<command>			(Telegram can't handle large command output)."
@@ -39,7 +39,7 @@ DISPLAY_HELP()
 }
 
 TELEGRAM_API="https://api.telegram.org/bot${TELEGRAM_TOKEN}"
-TELEGRAM_CHAT_ID="${2}"
+TELEGRAM_CHAT_ID="${3}"
 
 SEND_MESSAGE()
 {
@@ -74,18 +74,18 @@ if [[ ${?} -eq "0" ]]
 	then
 		case ${1} in
 			-c|--command)
-				COMMAND=$(${3})
+				COMMAND=$(${2})
 				SEND_COMMAND_OUTPUT
 				;;
 			-d|--doc)
-				DOCUMENT_URL="${3}"
+				DOCUMENT_URL="${2}"
 				SEND_DOCUMENT
 				;;
 			-h| --help)
 				DISPLAY_HELP
 				;;
 			-t|--text)
-				TEXT="${3}"
+				TEXT="${2}"
 				SEND_MESSAGE
 				;;
 			-u| --update)
