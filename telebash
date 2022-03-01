@@ -44,20 +44,8 @@ TELEGRAM_CHAT_ID="${3}"
 SEND_MESSAGE()
 {
 	ENDPOINT="sendMessage"
-	PARSE_MODE="markdown" ## "html" or "markdown"
+	PARSE_MODE="html" ## "html" or "markdown"
 	curl -s -d "chat_id=${TELEGRAM_CHAT_ID}&parse_mode=${PARSE_MODE}&text=${TEXT}" ${TELEGRAM_API}/${ENDPOINT} | jq
-}
-
-SEND_COMMAND_OUTPUT()
-{
-	ENDPOINT="sendMessage"
-	curl -s -d "chat_id=${TELEGRAM_CHAT_ID}&parse_mode=${PARSE_MODE}&text=${COMMAND}" ${TELEGRAM_API}/${ENDPOINT} | jq
-}
-
-SEND_DOCUMENT()
-{
-	ENDPOINT="sendDocument"
-	curl -s -d "chat_id=${TELEGRAM_CHAT_ID}&document=${DOCUMENT_URL}" ${TELEGRAM_API}/${ENDPOINT} | jq
 }
 
 GET_UPDATE()
@@ -73,14 +61,6 @@ which ${REQUIREMENTS} > /dev/null
 if [[ ${?} -eq "0" ]]
 	then
 		case ${1} in
-			-c|--command)
-				COMMAND=$(${2})
-				SEND_COMMAND_OUTPUT
-				;;
-			-d|--doc)
-				DOCUMENT_URL="${2}"
-				SEND_DOCUMENT
-				;;
 			-h| --help)
 				DISPLAY_HELP
 				;;
