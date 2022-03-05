@@ -2,14 +2,14 @@
 ## Send messages/documents with your Telegram bot.
 ## Check telegram-cli if you want more advanced features.
 
+## Set colors.
 RC="\e[0m"
-GREY="\e[37m"
 YELLOW="\e[33m"
 GREEN="\e[32m"
 CYAN="\e[36m"
 RED="\e[31m"
 BOLD="\e[1m"
-UNDERLINE="\e[4m"
+UL="\e[4m"
 ITALIC="\e[3m"
 
 TELEBASH_PATH="${HOME}/.config/telebash"
@@ -19,23 +19,23 @@ TELEBASH_LOGO="${TELEBASH_PATH}/logo.txt"
 if [[ -f ${TELEGRAM_TOKEN} ]]
 	then
 		source ${TELEGRAM_TOKEN}
-		[[ ${TELEGRAM_TOKEN} == "" ]] && echo -e "\n${RED}${BOLD} Token${RC}${RED} config file found but contain nothing!\n Exiting...${RC}\n"
+		[[ ${TELEGRAM_TOKEN} == "" ]] && echo -e "\n${RED}${BOLD}Token${RED}${BOLD} config file found but contain nothing!${RC}\n${RED}Exiting...\n"
 	else
-		echo -e "\n${RED} Token is missing!${RC}\n Get one with ${CYAN}${BOLD}@botfather${RC} on Telegram.\n" && exit 1
+		echo -e "\n${RED}${BOLD}Token is missing!${RC}\n Get one with ${CYAN}@botfather${RC} on Telegram.\n" && exit 1
 fi
 
 DISPLAY_HELP()
 {
 	[[ -f ${TELEBASH_LOGO} ]] && cat ${TELEBASH_LOGO}
-	echo -e " ${UNDERLINE}${BOLD}Usage:${RC}"
-	echo -e "  ./telebash ${GREY}<${RC}options${GREY}> <${RC}command/file/url/text${GREY}> <${RC}chat ID${GREY}> ${RC}\n"
+	echo -e " ${UL}Usage:${RC}"
+	echo -e "  ./telebash <options> <command/file/url/text> <chat ID> \n"
 	echo -e "  To get a chat ID, run this script with the '-u' flag.\n"
-	echo -e " ${UNDERLINE}${BOLD}Options:${RC}"
-	echo -e "  ${YELLOW}${BOLD}-c${RC},${YELLOW}${BOLD}	--command${RC}		<command>			(Telegram can't handle large command output)."
-	echo -e "  ${YELLOW}${BOLD}-d${RC},${YELLOW}${BOLD}	--doc${RC}			<URL to document>		Send a files on the internet."
-	echo -e "  ${YELLOW}${BOLD}-h${RC},${YELLOW}${BOLD}	--help${RC}							Display this help."
-	echo -e "  ${YELLOW}${BOLD}-u${RC},${YELLOW}${BOLD}	--update${RC}						Get the latest infos (groups, messages...)."
-	echo -e "  ${YELLOW}${BOLD}-t${RC},${YELLOW}${BOLD}	--text${RC}			<text>				Send a text message.\n"
+	echo -e " ${UL}Options:${RC}"
+	echo -e "  ${YELLOW}-c,	--command${RC}		<command>			(Telegram can't handle large command output).${RC}"
+	echo -e "  ${YELLOW}-d,	--doc${RC}			<URL to document>		Send a files on the internet.${RC}"
+	echo -e "  ${YELLOW}-h,	--help${RC}							Display this help.${RC}"
+	echo -e "  ${YELLOW}-t,	--text${RC}			<text>				Send a text message.${RC}"
+	echo -e "  ${YELLOW}-u,	--update${RC}						Get the latest infos (groups, messages...).${RC}\n"
 }
 
 TELEGRAM_API="https://api.telegram.org/bot${TELEGRAM_TOKEN}"
@@ -55,11 +55,11 @@ GET_UPDATE()
 }
 
 REQUIREMENTS="curl jq"
-
-which ${REQUIREMENTS} > /dev/null
-
-if [[ ${?} -eq "0" ]]
+if ! which ${REQUIREMENTS} > /dev/null
 	then
+		echo -e "${YELLOW}${BOLD} \n To run this program, you need the following packages installed: ${REQUIREMENTS}\n${RED}${BOLD} Exiting...\n"
+		exit 1
+	else
 		case ${1} in
 			-h| --help)
 				DISPLAY_HELP
@@ -75,7 +75,4 @@ if [[ ${?} -eq "0" ]]
 				DISPLAY_HELP
 				;;
 		esac
-	else
-		echo -e "${RED}\n To run this program, you need the following packages installed: ${BOLD}${REQUIREMENTS}${RC}\n${RED} Exiting...${RC}\n"
-		exit 1
 fi
