@@ -28,7 +28,7 @@ DISPLAY_HELP()
 {
 	[[ -f ${TELEBASH_LOGO} ]] && cat ${TELEBASH_LOGO}
 	echo -e " ${UL}Usage:${RC}"
-	echo -e "  ./telebash <chat ID> <options> <text>\n"
+	echo -e "  ./telebash <options> <text/command> <chat ID>\n"
 	echo -e "  To get a chat ID, run this script with the '-u' flag.\n"
 	echo -e " ${UL}Options:${RC}"
 	echo -e "  ${YELLOW}-c,	--command${RC}		<command>			Display the command output.${RC}"
@@ -38,7 +38,7 @@ DISPLAY_HELP()
 }
 
 TELEGRAM_API="https://api.telegram.org/bot${TELEGRAM_TOKEN}"
-TELEGRAM_CHAT_ID="${1}"
+TELEGRAM_CHAT_ID="${3}"
 
 SEND_MESSAGE()
 {
@@ -59,16 +59,16 @@ if ! which ${REQUIREMENTS} > /dev/null
 		echo -e "${YELLOW}${BOLD} \n To run this program, you need the following packages installed: ${REQUIREMENTS}\n${RED}${BOLD} Exiting...\n"
 		exit 1
 	else
-		case ${2} in
+		case ${1} in
 			-c|--command)
-				TEXT=$(${3})
+				TEXT=$(${2})
 				SEND_MESSAGE
 				;;
 			-h| --help)
 				DISPLAY_HELP
 				;;
 			-t|--text)
-				TEXT="${3}"
+				TEXT="${2}"
 				SEND_MESSAGE
 				;;
 			-u| --update)
