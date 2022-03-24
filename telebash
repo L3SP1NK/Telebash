@@ -28,18 +28,17 @@ DISPLAY_HELP()
 {
 	[[ -f ${TELEBASH_LOGO} ]] && cat ${TELEBASH_LOGO}
 	echo -e " ${UL}Usage:${RC}"
-	echo -e "  ./telebash <options> <command/file/url/text> <chat ID> \n"
+	echo -e "  ./telebash <chat ID> <options> <text>\n"
 	echo -e "  To get a chat ID, run this script with the '-u' flag.\n"
 	echo -e " ${UL}Options:${RC}"
-	echo -e "  ${YELLOW}-c,	--command${RC}		<command>			(Telegram can't handle large command output).${RC}"
-	echo -e "  ${YELLOW}-d,	--doc${RC}			<URL to document>		Send a files on the internet.${RC}"
+	echo -e "  ${YELLOW}-c,	--command${RC}		<command>			Display the command output.${RC}"
 	echo -e "  ${YELLOW}-h,	--help${RC}							Display this help.${RC}"
 	echo -e "  ${YELLOW}-t,	--text${RC}			<text>				Send a text message.${RC}"
-	echo -e "  ${YELLOW}-u,	--update${RC}						Get the latest infos (groups, messages...).${RC}\n"
+	echo -e "  ${YELLOW}-u,	--update${RC}						Get the latest infos (groups, messages...)${RC}\n"
 }
 
 TELEGRAM_API="https://api.telegram.org/bot${TELEGRAM_TOKEN}"
-TELEGRAM_CHAT_ID="${3}"
+TELEGRAM_CHAT_ID="${1}"
 
 SEND_MESSAGE()
 {
@@ -60,12 +59,16 @@ if ! which ${REQUIREMENTS} > /dev/null
 		echo -e "${YELLOW}${BOLD} \n To run this program, you need the following packages installed: ${REQUIREMENTS}\n${RED}${BOLD} Exiting...\n"
 		exit 1
 	else
-		case ${1} in
+		case ${2} in
+			-c|--command)
+				TEXT=$(${3})
+				SEND_MESSAGE
+				;;
 			-h| --help)
 				DISPLAY_HELP
 				;;
 			-t|--text)
-				TEXT="${2}"
+				TEXT="${3}"
 				SEND_MESSAGE
 				;;
 			-u| --update)
