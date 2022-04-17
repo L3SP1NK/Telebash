@@ -17,6 +17,7 @@ ITALIC="\e[3m"
 TELEGRAM_API_URL="https://api.telegram.org/bot"
 TELEGRAM_TOKEN_FILE="${HOME}/.config/telebash/telebash_token.txt"
 TELEGRAM_TOKEN="$(cat ${TELEGRAM_TOKEN_FILE})"
+TELEGRAM_CHAT_ID="${3}"
 
 DISPLAY_HELP()
 {
@@ -37,10 +38,10 @@ SEND_MESSAGE()
 	PARSE_MODE="html" ## "html" or "markdown"
 
 	curl \
-		--silent ${TELEGRAM_API_URL}${TELEGRAM_TOKEN}/${ENDPOINT} \
-		--form chat_id=${TELEGRAM_CHAT_ID} \
-		--form parse_mode=${PARSE_MODE} \
-		--form text=${TEXT} \
+		--silent "${TELEGRAM_API_URL}${TELEGRAM_TOKEN}/${ENDPOINT}" \
+		--form chat_id="${TELEGRAM_CHAT_ID}"\
+		--form parse_mode="${PARSE_MODE}" \
+		--form text="${TEXT}" \
 		| jq
 }
 
@@ -49,9 +50,9 @@ SEND_DOCUMENT()
 	ENDPOINT="sendDocument"
 
 	curl \
-		--silent ${TELEGRAM_API_URL}${TELEGRAM_TOKEN}/${ENDPOINT} \
+		--silent "${TELEGRAM_API_URL}${TELEGRAM_TOKEN}/${ENDPOINT}" \
 		--form document=@${DOCUMENT} \
-		--form chat_id=${TELEGRAM_CHAT_ID} \
+		--form chat_id="${TELEGRAM_CHAT_ID}"\
 		| jq
 }
 
@@ -60,7 +61,7 @@ GET_UPDATE()
 	ENDPOINT="getUpdates"
 
 	curl \
-		--silent ${TELEGRAM_API_URL}${TELEGRAM_TOKEN}/${ENDPOINT} \
+		--silent "${TELEGRAM_API_URL}${TELEGRAM_TOKEN}/${ENDPOINT}" \
 		| jq
 }
 
@@ -77,11 +78,10 @@ if ! which ${REQUIREMENTS} > /dev/null
 				exit 1
 		fi
 
-		TELEGRAM_CHAT_ID="${3}"
 
 		case ${1} in
 			-c|--command)
-				TEXT="$(${2})"
+				TEXT=$(${2})
 				if SEND_MESSAGE
 					then
 						echo -e "${GREEN}Message sent.${RC}"
@@ -92,8 +92,8 @@ if ! which ${REQUIREMENTS} > /dev/null
 				;;
 
 			-d|--document)
-				DOCUMENT="${2}"
-				if SEND_MESSAGE
+				DOCUMENT=${2}
+				if SEND_DOCUMENT
 					then
 						echo -e "${GREEN}Message sent.${RC}"
 					else
@@ -107,7 +107,7 @@ if ! which ${REQUIREMENTS} > /dev/null
 				;;
 
 			-t|--text)
-				TEXT="${2}"
+				TEXT=${2}
 				if SEND_MESSAGE
 					then
 						echo -e "${GREEN}Message sent.${RC}"
