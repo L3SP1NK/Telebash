@@ -1,6 +1,5 @@
 #!/bin/bash
 ## Send messages/documents with your Telegram bot.
-
 ## Check telegram-cli if you want more advanced features.
 
 ## TODO:
@@ -118,7 +117,7 @@ if ! which ${REQUIREMENTS} > /dev/null
 				fi
 				;;
 
-			-u| --update)
+			-u|--update)
 				if GET_UPDATE
 					then
 						echo -e "${GREEN}Done.${RC}"
