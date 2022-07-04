@@ -2,9 +2,6 @@
 ## Send messages/documents with your Telegram bot.
 ## Check telegram-cli if you want more advanced features.
 
-## TODO:
-## - Check if files is larger than 2GB before sending it.
-
 RC="\e[0m"
 YELLOW="\e[33m"
 GREEN="\e[32m"
@@ -35,7 +32,7 @@ DISPLAY_HELP()
 SEND_MESSAGE()
 {
     ENDPOINT="sendMessage"
-    PARSE_MODE="html" ## "html" or "markdown"
+    PARSE_MODE="html" ## Possible value are "html" or "markdown"
 
     curl \
         --silent "${TELEGRAM_API_URL}${TELEGRAM_TOKEN}/${ENDPOINT}" \
