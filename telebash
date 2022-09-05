@@ -1,6 +1,5 @@
-#!/usr/bin/env bash
-## Send messages/documents with your Telegram bot.
-## Check telegram-cli if you want more advanced features.
+#!/bin/bash
+## Send messages with Telegram.
 
 RC="\e[0m"
 YELLOW="\e[33m"
@@ -11,122 +10,175 @@ BOLD="\e[1m"
 UL="\e[4m"
 ITALIC="\e[3m"
 
-TELEGRAM_API_URL="https://api.telegram.org/bot"
-TELEGRAM_TOKEN_FILE="${HOME}/.config/telebash/telebash_token.txt"
-TELEGRAM_TOKEN="$(cat ${TELEGRAM_TOKEN_FILE})"
-TELEGRAM_CHAT_ID="${3}"
+OPTION="${1}"
+INPUT="${2}"
+CHAT_ID="${3}"
 
-DISPLAY_HELP()
-{
-    echo -e " \n${UL}Usage:${RC}"
-    echo -e "  ./telebash <options> <text/command> <chat ID>\n"
-    echo -e "  To get a chat ID, run this script with '-u'.\n"
-    echo -e " ${UL}Options:${RC}"
-    echo -e "  ${YELLOW}-c,    --command${RC}    <command>    Send a command output.${RC}"
-    echo -e "  ${YELLOW}-d,    --document${RC}    <path>        Send a document.${RC}"
-    echo -e "  ${YELLOW}-h,    --help${RC}                Display this help.${RC}"
-    echo -e "  ${YELLOW}-t,    --text${RC}        <text>        Send a text message.${RC}"
-    echo -e "  ${YELLOW}-u,    --update${RC}            Get the latest infos (groups, messages...)${RC}\n"
-}
+TG_API_URL="https://api.telegram.org/bot"
+TG_TOKEN_FILE="${HOME}/.config/telebash/telebash_token.txt"
+TG_TOKEN="$(<${TG_TOKEN_FILE})"
+TG_CHAT_ID="${CHAT_ID}"
 
-SEND_MESSAGE()
-{
-    ENDPOINT="sendMessage"
-    PARSE_MODE="html" ## Possible value are "html" or "markdown"
-
-    curl \
-        --silent "${TELEGRAM_API_URL}${TELEGRAM_TOKEN}/${ENDPOINT}" \
-        --form chat_id="${TELEGRAM_CHAT_ID}"\
-        --form parse_mode="${PARSE_MODE}" \
-        --form text="${TEXT}" \
-        | jq
-}
-
-SEND_DOCUMENT()
-{
-    ENDPOINT="sendDocument"
-
-    curl \
-        --silent "${TELEGRAM_API_URL}${TELEGRAM_TOKEN}/${ENDPOINT}" \
-        --form document=@${DOCUMENT} \
-        --form chat_id="${TELEGRAM_CHAT_ID}"\
-        | jq
-}
-
-GET_UPDATE()
-{
-    ENDPOINT="getUpdates"
-
-    curl \
-        --silent "${TELEGRAM_API_URL}${TELEGRAM_TOKEN}/${ENDPOINT}" \
-        | jq
-}
-
-REQUIREMENTS="curl jq"
-
-if ! which ${REQUIREMENTS} > /dev/null
-    then
-        echo -e "${RED} \n To run this program, you need the following packages installed: ${BOLD}${REQUIREMENTS}${RC}\n"
+checkEnv(){
+    REQUIREMENTS="curl jq ccze"
+    if ! which ${REQUIREMENTS}>/dev/null;then
+        echo -e "${RED}To run this program, you need the following packages installed: ${BOLD}${REQUIREMENTS}${RC}\n"
         exit 1
-    else
-        if [[ ! -f ${TELEGRAM_TOKEN_FILE} || ! ${TELEGRAM_TOKEN} ]]
-            then
-                echo -e "\n ${RED}Token is missing!\n ${RC} \n Get one with ${CYAN}@botfather${RC} on Telegram.\n"
-                exit 1
+    fi
+
+    if [[ ! -f ${TG_TOKEN_FILE} || ! ${TG_TOKEN} ]];then
+        echo -e "\n ${RED}Token is missing!\n ${RC}\n Get one with ${CYAN}@botfather${RC} on Telegram.\n"
+        exit 1
+    fi
+}
+
+helpMenu(){
+    echo -e "\n\
+  ${UL}Usage:${RC}\n\n\
+    ./telebash <options> <input> <chat ID>\n\n\
+    To get a chat ID, run this script with '--update'.\n\n\
+  ${UL}Options:${RC}\n\n\
+    -c, --command       <command>       Send a command output.\n\
+    -d, --document}     <path>          Send a document.\n\
+    -f, --favorites                     Show your favorites chat ID.
+    -h, --help                          Display this help.\n\
+    -t, --text          <text>          Send a text message.\n\
+    -u, --update                        Get the latest infos (groups, messages...)\n"
+}
+
+showFavorites(){
+    FAV_FILE="${HOME}/.config/telebash/favorites.txt"
+    if [[ ! -f ${FAV_FILE} ]];then
+        echo -e "${RED}Add favorites in ${FAV_FILE}${RC}"
+        exit 1
+    fi
+
+    FAV_CHAT_ID=$(<${FAV_FILE})
+    if [[ ! ${FAV_CHAT_ID} ]];then
+        echo -e "${RED}Add favorites in ${FAV_FILE}${RC}"
+        exit 1
+    fi
+
+    for FAV in $(<${FAV_FILE});do
+        echo -e "\n${CYAN}    ⭐ ${FAV}${RC}\n"
+    done
+}
+
+ENDPOINTS=( sendMessage sendDocument getUpdates )
+
+sendMessage(){
+    ENDPOINT=${ENDPOINTS[0]}
+    PARSE_MODE="html" ## Valid options are "html" or "markdown"
+    curl\
+        --silent "${TG_API_URL}${TG_TOKEN}/${ENDPOINT}"\
+        --form chat_id="${TG_CHAT_ID}"\
+        --form parse_mode="${PARSE_MODE}"\
+        --form text="${TEXT}"
+}
+
+sendDocument(){
+    ENDPOINT=${ENDPOINTS[1]}
+    curl\
+        --silent "${TG_API_URL}${TG_TOKEN}/${ENDPOINT}"\
+        --form document=@${DOCUMENT}\
+        --form chat_id="${TG_CHAT_ID}"
+}
+
+getUpdate(){
+    ENDPOINT=${ENDPOINTS[2]}
+    curl\
+        --silent "${TG_API_URL}${TG_TOKEN}/${ENDPOINT}"
+}
+
+
+checkEnv
+if [[ ! ${OPTION} ]];then
+    helpMenu
+    exit 1
+fi
+
+case ${OPTION} in
+
+    -c|--command)
+        if [[ ! ${INPUT} ]];then
+            echo -e "${RED}Enter a command!${RC}"
+            exit 1
         fi
 
+        if [[ ! $(which ${INPUT}) ]];then
+            echo -e "${RED}Command not found!${RC}"
+            exit 1
+        fi
 
-        case ${1} in
-            -c|--command)
-                TEXT=$(${2})
-                if SEND_MESSAGE
-                    then
-                        echo -e "${GREEN}Message sent.${RC}"
-                    else
-                        echo -e "${RED}Something went wrong!${RC}"
-                        exit 1
-                fi
-                ;;
+        if [[ ! ${CHAT_ID} ]];then
+            echo -e "${RED}Enter a chat ID!${RC}"
+            exit 1
+        fi
 
-            -d|--document)
-                DOCUMENT=${2}
-                if SEND_DOCUMENT
-                    then
-                        echo -e "${GREEN}Message sent.${RC}"
-                    else
-                        echo -e "${RED}Something went wrong!${RC}"
-                        exit 1
-                fi
-                ;;
+        TEXT=$(${INPUT})
+        sendMessage\
+        |jq\
+        |tr -d '{},"[]()'\
+        |ccze -A
+        ;;
 
-            -h| --help)
-                DISPLAY_HELP
-                ;;
+    -d|--document)
+        if [[ ! ${INPUT} ]];then
+            echo -e "${RED}Enter the path to a document!${RC}"
+            exit 1
+        fi
 
-            -t|--text)
-                TEXT=${2}
-                if SEND_MESSAGE
-                    then
-                        echo -e "${GREEN}Message sent.${RC}"
-                    else
-                        echo -e "${RED}Something went wrong!${RC}"
-                        exit 1
-                fi
-                ;;
+        if [[ ! -e ${INPUT} ]];then
+            echo -e "${RED}Can't find your document!${RC}"
+            exit 1
+        fi
 
-            -u|--update)
-                if GET_UPDATE
-                    then
-                        echo -e "${GREEN}Done.${RC}"
-                    else
-                        echo -e "${RED}Something went wrong!${RC}"
-                        exit 1
-                fi
-                ;;
+        if [[ ! ${CHAT_ID} ]];then
+            echo -e "${RED}Enter a chat ID!${RC}"
+            exit 1
+        fi
 
-            *)
-                DISPLAY_HELP
-                ;;
+        DOCUMENT=${INPUT}
+        sendDocument\
+        |jq\
+        |tr -d '{},"[]()'\
+        |ccze -A
+        ;;
 
-        esac
-fi
+    -f|--favorites)
+        showFavorites
+        ;;
+
+    -h| --help)
+        helpMenu
+        ;;
+
+    -t|--text)
+        if [[ ! ${INPUT} ]];then
+            echo -e "${RED}Enter a text!${RC}"
+            exit 1
+        fi
+
+        if [[ ! ${CHAT_ID} ]];then
+            echo -e "${RED}Enter a chat ID!${RC}"
+            exit 1
+        fi
+
+        TEXT=${INPUT}
+        sendMessage\
+        |jq\
+        |tr -d '{},"[]()'\
+        |ccze -A
+        ;;
+
+    -u|--update)
+        getUpdate\
+        |jq\
+        |tr -d '{},"[]()'\
+        |ccze -A
+        ;;
+
+    *)
+        helpMenu
+        ;;
+esac
