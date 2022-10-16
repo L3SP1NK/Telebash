@@ -16,7 +16,7 @@ CHAT_ID="${3}"
 
 TG_API_URL="https://api.telegram.org/bot"
 TG_TOKEN_FILE="${HOME}/.config/telebash/telebash_token.txt"
-TG_TOKEN="$(<${TG_TOKEN_FILE})"
+TG_TOKEN="$(cat ${TG_TOKEN_FILE})"
 TG_CHAT_ID="${CHAT_ID}"
 
 checkEnv(){
@@ -39,7 +39,7 @@ helpMenu(){
     To get a chat ID, run this script with '--update'.\n\n\
   ${UL}Options:${RC}\n\n\
     -c, --command       <command>       Send a command output.\n\
-    -d, --document}     <path>          Send a document.\n\
+    -d, --document      <path>          Send a document.\n\
     -f, --favorites                     Show your favorites chat ID.
     -h, --help                          Display this help.\n\
     -t, --text          <text>          Send a text message.\n\
