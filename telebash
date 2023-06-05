@@ -38,7 +38,6 @@ helpMenu(){
     ./telebash <options> <input> <chat ID>\n\n\
     To get a chat ID, run this script with '--update'.\n\n\
   ${UL}Options:${RC}\n\n\
-    -c, --command       <command>       Send a command output.\n\
     -d, --document      <path>          Send a document.\n\
     -f, --favorites                     Show your favorites chat ID.
     -h, --help                          Display this help.\n\
@@ -98,29 +97,6 @@ if [[ ! ${OPTION} ]];then
 fi
 
 case ${OPTION} in
-
-    -c|--command)
-        if [[ ! ${INPUT} ]];then
-            echo -e "${RED}Enter a command!${RC}"
-            exit 1
-        fi
-
-        if [[ ! $(which ${INPUT}) ]];then
-            echo -e "${RED}Command not found!${RC}"
-            exit 1
-        fi
-
-        if [[ ! ${CHAT_ID} ]];then
-            echo -e "${RED}Enter a chat ID!${RC}"
-            exit 1
-        fi
-
-        TEXT=$(${INPUT})
-        sendMessage\
-        |jq\
-        |tr -d '{},"[]()'\
-        |ccze -A
-        ;;
 
     -d|--document)
         if [[ ! ${INPUT} ]];then
