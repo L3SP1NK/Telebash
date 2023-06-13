@@ -16,7 +16,7 @@ CHAT_ID="${3}"
 
 TG_API_URL="https://api.telegram.org/bot"
 TG_TOKEN_FILE="${HOME}/.config/telebash/telebash_token.txt"
-TG_TOKEN="$(cat ${TG_TOKEN_FILE})"
+TG_TOKEN="$(cat ${TG_TOKEN_FILE}|head -n 1)"
 TG_CHAT_ID="${CHAT_ID}"
 
 checkEnv(){
@@ -54,7 +54,7 @@ showFavorites(){
 
     FAV_CHAT_ID=$(<${FAV_FILE})
     if [[ ! ${FAV_CHAT_ID} ]];then
-        echo -e "${RED}Add favorites in ${FAV_FILE}${RC}"
+        echo -e "${RED}Add favorites in ${FAV_FILE}${RC} (format: <chat id>@<username>)"
         exit 1
     fi
 
