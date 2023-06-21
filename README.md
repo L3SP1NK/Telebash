@@ -31,12 +31,7 @@ To use Telebash, run the script with the following command:
 - `-t, --text <text>`: Send a text message.
 - `-u, --update`: Get the latest updates from Telegram (groups, messages, etc.).
 
-To get a chat ID, you can run the script with the `--update` option, and the script will provide the necessary information.
-
-### Examples
-
-- Sending a text message:
-
+To get a chat ID, you can run the script with the `--update` option.
 
 ## Notes
 
