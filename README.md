@@ -12,8 +12,8 @@ Before using Telebash, make sure you have the following requirements installed:
 
 ## Setup
 
-1. Clone the Telebash repository from GitHub: [Telebash GitHub Repo](https://github.com/yourusername/telebash)
-2. Make the script executable: `chmod +x telebash.sh`
+1. Clone the Telebash repository from GitHub: [Telebash GitHub Repo](https://github.com/L3SP1NK/Telebash)
+2. Make the script executable: `chmod +x telebash`
 3. Obtain a Telegram Bot Token from [@botfather](https://t.me/botfather) on Telegram.
 4. Create a file named `telebash_token.txt` in the `~/.config/telebash/` directory.
 5. Paste your Telegram Bot Token into the `telebash_token.txt` file and save it.
