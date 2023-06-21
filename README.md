@@ -1,11 +1,49 @@
-## Telebash
+# Telebash
 
-Bash script to send messages on telegram with a bot.<br>
+Telebash is a Bash script that allows you to send messages using Telegram. It provides a convenient way to interact with the Telegram Bot API from the command line. With Telebash, you can send text messages or even send documents to your desired chat.
 
-You don't have a bot yet? It's super easy:<br>
+## Prerequisites
 
-1). Create one directly in Telegram with @botfather.<br>
-2). Get your group ID using: `curl -s "https://api.telegram.org/bot<bot key>/getUpdates"`<br>
-3). Create a telegram_token.txt file inside the config directory (~/.config/telebash/) containing your token.<br>
+Before using Telebash, make sure you have the following requirements installed:
 
-Information on the Telegram API [here.](https://core.telegram.org/bots/api)<br>
+- curl
+- jq
+- ccze
+
+## Setup
+
+1. Clone the Telebash repository from GitHub: [Telebash GitHub Repo](https://github.com/yourusername/telebash)
+2. Make the script executable: `chmod +x telebash.sh`
+3. Obtain a Telegram Bot Token from [@botfather](https://t.me/botfather) on Telegram.
+4. Create a file named `telebash_token.txt` in the `~/.config/telebash/` directory.
+5. Paste your Telegram Bot Token into the `telebash_token.txt` file and save it.
+
+## Usage
+
+To use Telebash, run the script with the following command:
+
+
+### Options
+
+- `-d, --document <path>`: Send a document.
+- `-f, --favorites`: Show your favorite chat IDs.
+- `-h, --help`: Display the help menu.
+- `-t, --text <text>`: Send a text message.
+- `-u, --update`: Get the latest updates from Telegram (groups, messages, etc.).
+
+To get a chat ID, you can run the script with the `--update` option, and the script will provide the necessary information.
+
+### Examples
+
+- Sending a text message:
+
+
+## Notes
+
+- Telebash uses the Telegram Bot API, and it supports the parsing modes "html" and "markdown" for formatting text messages.
+
+- Telebash provides an interactive and convenient way to interact with Telegram using your command line.
+
+For more information and updates, please visit the [Telebash GitHub repository](https://github.com/yourusername/telebash).
+
+Enjoy using Telebash to send messages with Telegram!
