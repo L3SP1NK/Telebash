@@ -2,13 +2,13 @@
 ## Send messages with Telegram.
 
 RC="\e[0m"
-YELLOW="\e[33m"
-GREEN="\e[32m"
+#YELLOW="\e[33m"
+#GREEN="\e[32m"
 CYAN="\e[36m"
 RED="\e[31m"
 BOLD="\e[1m"
 UL="\e[4m"
-ITALIC="\e[3m"
+#ITALIC="\e[3m"
 
 OPTION="${1}"
 INPUT="${2}"
@@ -16,15 +16,17 @@ CHAT_ID="${3}"
 
 TG_API_URL="https://api.telegram.org/bot"
 TG_TOKEN_FILE="${HOME}/.config/telebash/telebash_token.txt"
-TG_TOKEN="$(cat ${TG_TOKEN_FILE}|head -n 1)"
+TG_TOKEN="$(head -n 1 < "${TG_TOKEN_FILE}")"
 TG_CHAT_ID="${CHAT_ID}"
 
 checkEnv(){
     REQUIREMENTS="curl jq ccze"
-    if ! which ${REQUIREMENTS}>/dev/null;then
-        echo -e "${RED}To run this program, you need the following packages installed: ${BOLD}${REQUIREMENTS}${RC}\n"
-        exit 1
-    fi
+    for R in ${REQUIREMENTS}; do
+        if ! which "${R}">/dev/null;then
+            echo -e "${RED}${R}not found!${BOLD}${REQUIREMENTS}${RC}\n"
+            exit 1
+        fi
+    done
 
     if [[ ! -f ${TG_TOKEN_FILE} || ! ${TG_TOKEN} ]];then
         echo -e "\n ${RED}Token is missing!\n ${RC}\n Get one with ${CYAN}@botfather${RC} on Telegram.\n"
@@ -52,13 +54,13 @@ showFavorites(){
         exit 1
     fi
 
-    FAV_CHAT_ID=$(<${FAV_FILE})
+    FAV_CHAT_ID="$( < "${FAV_FILE}" )"
     if [[ ! ${FAV_CHAT_ID} ]];then
         echo -e "${RED}Add favorites in ${FAV_FILE}${RC} (format: <chat id>@<username>)"
         exit 1
     fi
 
-    for FAV in $(<${FAV_FILE});do
+    for FAV in $( < "${FAV_FILE}" );do
         echo -e "\n${CYAN}    ⭐ ${FAV}${RC}\n"
     done
 }
@@ -79,7 +81,7 @@ sendDocument(){
     ENDPOINT=${ENDPOINTS[1]}
     curl\
         --silent "${TG_API_URL}${TG_TOKEN}/${ENDPOINT}"\
-        --form document=@${DOCUMENT}\
+        --form document=@"${DOCUMENT}"\
         --form chat_id="${TG_CHAT_ID}"
 }
 
