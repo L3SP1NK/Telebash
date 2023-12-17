@@ -1,14 +1,12 @@
 #!/bin/bash
-## Send messages with Telegram.
+
+## Send messages with Telegram form CLI.
 
 RC="\e[0m"
-#YELLOW="\e[33m"
-#GREEN="\e[32m"
 CYAN="\e[36m"
 RED="\e[31m"
 BOLD="\e[1m"
 UL="\e[4m"
-#ITALIC="\e[3m"
 
 OPTION="${1}"
 INPUT="${2}"
@@ -16,25 +14,38 @@ CHAT_ID="${3}"
 
 TG_API_URL="https://api.telegram.org/bot"
 TG_TOKEN_FILE="${HOME}/.config/telebash/telebash_token.txt"
-TG_TOKEN="$(head -n 1 < "${TG_TOKEN_FILE}")"
+TG_TOKEN=$( head -n 1 < "${TG_TOKEN_FILE}" )
 TG_CHAT_ID="${CHAT_ID}"
 
+
 checkEnv(){
+
     REQUIREMENTS="curl jq ccze"
+
     for R in ${REQUIREMENTS}; do
+
         if ! which "${R}">/dev/null;then
-            echo -e "${RED}${R}not found!${BOLD}${REQUIREMENTS}${RC}\n"
+
+            echo -e "${RED}${R} not found!${BOLD}${RC}\n"
             exit 1
+
         fi
+
     done
 
+
     if [[ ! -f ${TG_TOKEN_FILE} || ! ${TG_TOKEN} ]];then
+
         echo -e "\n ${RED}Token is missing!\n ${RC}\n Get one with ${CYAN}@botfather${RC} on Telegram.\n"
         exit 1
+
     fi
+
 }
 
+
 helpMenu(){
+
     echo -e "\n\
   ${UL}Usage:${RC}\n\n\
     ./telebash <options> <input> <chat ID>\n\n\
@@ -45,40 +56,62 @@ helpMenu(){
     -h, --help                          Display this help.\n\
     -t, --text          <text>          Send a text message.\n\
     -u, --update                        Get the latest infos (groups, messages...)\n"
+
 }
+
 
 showFavorites(){
+
     FAV_FILE="${HOME}/.config/telebash/favorites.txt"
+
     if [[ ! -f ${FAV_FILE} ]];then
+
         echo -e "${RED}Add favorites in ${FAV_FILE}${RC}"
         exit 1
+
     fi
+
 
     FAV_CHAT_ID="$( < "${FAV_FILE}" )"
+
     if [[ ! ${FAV_CHAT_ID} ]];then
+
         echo -e "${RED}Add favorites in ${FAV_FILE}${RC} (format: <chat id>@<username>)"
         exit 1
+
     fi
 
+
     for FAV in $( < "${FAV_FILE}" );do
+
         echo -e "\n${CYAN}    ⭐ ${FAV}${RC}\n"
+
     done
+
 }
+
 
 ENDPOINTS=( sendMessage sendDocument getUpdates )
 
+
 sendMessage(){
+
     ENDPOINT=${ENDPOINTS[0]}
     PARSE_MODE="html" ## Valid options are "html" or "markdown"
+
     curl\
         --silent "${TG_API_URL}${TG_TOKEN}/${ENDPOINT}"\
         --form chat_id="${TG_CHAT_ID}"\
         --form parse_mode="${PARSE_MODE}"\
         --form text="${TEXT}"
+
 }
 
+
 sendDocument(){
+
     ENDPOINT=${ENDPOINTS[1]}
+
     curl\
         --silent "${TG_API_URL}${TG_TOKEN}/${ENDPOINT}"\
         --form document=@"${DOCUMENT}"\
@@ -86,77 +119,110 @@ sendDocument(){
 }
 
 getUpdate(){
+
     ENDPOINT=${ENDPOINTS[2]}
+
     curl\
         --silent "${TG_API_URL}${TG_TOKEN}/${ENDPOINT}"
+
 }
 
 
 checkEnv
-if [[ ! ${OPTION} ]];then
+
+if [[ ! "${OPTION}" ]];then
+
     helpMenu
     exit 1
+
 fi
+
 
 case ${OPTION} in
 
     -d|--document)
+
         if [[ ! ${INPUT} ]];then
+
             echo -e "${RED}Enter the path to a document!${RC}"
             exit 1
+
         fi
+
 
         if [[ ! -e ${INPUT} ]];then
+
             echo -e "${RED}Can't find your document!${RC}"
             exit 1
+
         fi
 
+
         if [[ ! ${CHAT_ID} ]];then
+
             echo -e "${RED}Enter a chat ID!${RC}"
             exit 1
+
         fi
+
 
         DOCUMENT=${INPUT}
-        sendDocument\
-        |jq\
-        |tr -d '{},"[]()'\
-        |ccze -A
+
+        sendDocument | jq | tr -d '{},"[]()' | ccze -A
+
         ;;
+
 
     -f|--favorites)
+
         showFavorites
+
         ;;
+
 
     -h| --help)
+
         helpMenu
+
         ;;
+
 
     -t|--text)
+
         if [[ ! ${INPUT} ]];then
+
             echo -e "${RED}Enter a text!${RC}"
             exit 1
+
         fi
+
 
         if [[ ! ${CHAT_ID} ]];then
+
             echo -e "${RED}Enter a chat ID!${RC}"
             exit 1
+
         fi
 
+
         TEXT=${INPUT}
-        sendMessage\
-        |jq\
-        |tr -d '{},"[]()'\
-        |ccze -A
+
+        sendMessage | jq | tr -d '{},"[]()' | ccze -A
+
         ;;
+
 
     -u|--update)
-        getUpdate\
-        |jq\
-        |tr -d '{},"[]()'\
-        |ccze -A
+
+        getUpdate |jq | tr -d '{},"[]()' | ccze -A
+
         ;;
 
+
     *)
+
         helpMenu
+
         ;;
+
 esac
