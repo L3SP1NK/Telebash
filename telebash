@@ -97,7 +97,7 @@ ENDPOINTS=( sendMessage sendDocument getUpdates )
 sendMessage(){
 
     ENDPOINT=${ENDPOINTS[0]}
-    PARSE_MODE="html" ## Valid options are "html" or "markdown"
+    PARSE_MODE="markdown" ## Valid options are "html" or "markdown"
 
     curl\
         --silent "${TG_API_URL}${TG_TOKEN}/${ENDPOINT}"\
