@@ -15,12 +15,12 @@ CHAT_ID="${3}"
 TG_API_URL="https://api.telegram.org/bot"
 TG_TOKEN_FILE="${HOME}/.config/telebash/telebash_token.txt"
 TG_TOKEN=$( head -n 1 < "${TG_TOKEN_FILE}" )
-TG_CHAT_ID="${CHAT_ID}"
+FAV_FILE="${HOME}/.config/telebash/favorites.txt"
 
 
 checkEnv(){
 
-    REQUIREMENTS="curl jq ccze"
+    REQUIREMENTS="curl"
 
     for R in ${REQUIREMENTS}; do
 
@@ -62,8 +62,6 @@ helpMenu(){
 
 showFavorites(){
 
-    FAV_FILE="${HOME}/.config/telebash/favorites.txt"
-
     if [[ ! -f ${FAV_FILE} ]];then
 
         echo -e "${RED}Add favorites in ${FAV_FILE}${RC}"
@@ -101,7 +99,7 @@ sendMessage(){
 
     curl\
         --silent "${TG_API_URL}${TG_TOKEN}/${ENDPOINT}"\
-        --form chat_id="${TG_CHAT_ID}"\
+        --form chat_id="${CHAT_ID}"\
         --form parse_mode="${PARSE_MODE}"\
         --form text="${TEXT}"
 
@@ -115,7 +113,7 @@ sendDocument(){
     curl\
         --silent "${TG_API_URL}${TG_TOKEN}/${ENDPOINT}"\
         --form document=@"${DOCUMENT}"\
-        --form chat_id="${TG_CHAT_ID}"
+        --form chat_id="${CHAT_ID}"
 }
 
 getUpdate(){
@@ -129,6 +127,24 @@ getUpdate(){
 
 
 checkEnv
+
+
+passFavID(){
+
+    if [[ ! ${CHAT_ID} ]];then
+
+	## Chat ID list in favorites must be <chat-id>@<alias>
+		CHAT_ID=$( cut -d '@' -f 1 < "${FAV_FILE}" | head -n1)
+
+		if [[ -z "${CHAT_ID}" ]]; then
+            echo -e "${RED}Enter a chat ID! (No favorites found!)${RC}"
+            exit 1
+		fi
+
+    fi
+
+}
+
 
 if [[ ! "${OPTION}" ]];then
 
@@ -158,17 +174,11 @@ case ${OPTION} in
         fi
 
 
-        if [[ ! ${CHAT_ID} ]];then
-
-            echo -e "${RED}Enter a chat ID!${RC}"
-            exit 1
-
-        fi
-
+		passFavID
 
         DOCUMENT=${INPUT}
 
-        sendDocument | jq | tr -d '{},"[]()' | ccze -A
+        sendDocument
 
         ;;
 
@@ -197,24 +207,18 @@ case ${OPTION} in
         fi
 
 
-        if [[ ! ${CHAT_ID} ]];then
-
-            echo -e "${RED}Enter a chat ID!${RC}"
-            exit 1
-
-        fi
-
+		passFavID
 
         TEXT=${INPUT}
 
-        sendMessage | jq | tr -d '{},"[]()' | ccze -A
+        sendMessage
 
         ;;
 
 
     -u|--update)
 
-        getUpdate |jq | tr -d '{},"[]()' | ccze -A
+        getUpdate
 
         ;;
 
