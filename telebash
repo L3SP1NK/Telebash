@@ -2,17 +2,18 @@
 
 ## Send messages with Telegram form CLI.
 
-RC="\e[0m"
-CYAN="\e[36m"
-RED="\e[31m"
-BOLD="\e[1m"
-UL="\e[4m"
+defColors(){
+
+	RC='\e[0m'	CYAN='\e[36m'	RED='\e[31m'	BOLD='\e[1m'	UL='\e[4m'
+}
+
+defColors
 
 OPTION="${1}"
 INPUT="${2}"
 CHAT_ID="${3}"
 
-TG_API_URL="https://api.telegram.org/bot"
+TG_API_URL='https://api.telegram.org/bot'
 TG_TOKEN_FILE="${HOME}/.config/telebash/telebash_token.txt"
 TG_TOKEN=$( head -n 1 < "${TG_TOKEN_FILE}" )
 FAV_FILE="${HOME}/.config/telebash/favorites.txt"
@@ -20,7 +21,7 @@ FAV_FILE="${HOME}/.config/telebash/favorites.txt"
 
 checkEnv(){
 
-    REQUIREMENTS="curl"
+    REQUIREMENTS='curl'
 
     for R in ${REQUIREMENTS}; do
 
@@ -82,7 +83,7 @@ showFavorites(){
 
     for FAV in $( < "${FAV_FILE}" );do
 
-        echo -e "\n${CYAN}    ⭐ ${FAV}${RC}\n"
+        echo -e "\n${CYAN}\t ⭐ ${FAV}${RC}\n"
 
     done
 
