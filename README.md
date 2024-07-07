@@ -2,14 +2,6 @@
 
 Telebash is a Bash script that allows you to send messages using Telegram. It provides a convenient way to interact with the Telegram Bot API from the command line. With Telebash, you can send text messages or even send documents to your desired chat.
 
-## Prerequisites
-
-Before using Telebash, make sure you have the following requirements installed:
-
-- curl
-- jq
-- ccze
-
 ## Setup
 
 1. Clone the Telebash repository from GitHub: [Telebash GitHub Repo](https://github.com/L3SP1NK/Telebash)
