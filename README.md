@@ -31,6 +31,6 @@ To get a chat ID, you can run the script with the `--update` option.
 
 - Telebash provides an interactive and convenient way to interact with Telegram using your command line.
 
-For more information and updates, please visit the [Telebash GitHub repository](https://github.com/yourusername/telebash).
+For more information and updates, please visit the [Telegram API page](https://core.telegram.org/bots/api).
 
 Enjoy using Telebash to send messages with Telegram!
