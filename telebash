@@ -1,17 +1,22 @@
 #!/bin/bash
-
 ## Send messages with Telegram form CLI.
 
 defColors(){
 
-	RC='\e[0m'	CYAN='\e[36m'	RED='\e[31m'	BOLD='\e[1m'	UL='\e[4m'
+	RC='\e[0m'
+	BOLD='\e[1m'
+	UL='\e[4m'
+	RED='\e[31m'
+	GREEN='\e[32m'
+	CYAN='\e[36m'
+
 }
 
-defColors
 
 OPTION="${1}"
 INPUT="${2}"
 CHAT_ID="${3}"
+
 
 TG_API_URL='https://api.telegram.org/bot'
 TG_TOKEN_FILE="${HOME}/.config/telebash/telebash_token.txt"
@@ -21,21 +26,20 @@ FAV_FILE="${HOME}/.config/telebash/favorites.txt"
 
 checkEnv(){
 
-    REQUIREMENTS='curl'
+    REQUIREMENTS=( 'curl' )
 
-    for R in ${REQUIREMENTS}; do
+    for REQUIREMENT in "${REQUIREMENTS[@]}"; do
 
-        if ! which "${R}">/dev/null;then
+        if ! command -v "${REQUIREMENT}" > /dev/null; then
 
-            echo -e "${RED}${R} not found!${BOLD}${RC}\n"
+            echo -e "${RED}${REQUIREMENT} not found!${BOLD}${RC}\n"
             exit 1
 
         fi
 
     done
 
-
-    if [[ ! -f ${TG_TOKEN_FILE} || ! ${TG_TOKEN} ]];then
+    if [[ ! -f ${TG_TOKEN_FILE} || ! ${TG_TOKEN} ]]; then
 
         echo -e "\n ${RED}Token is missing!\n ${RC}\n Get one with ${CYAN}@botfather${RC} on Telegram.\n"
         exit 1
@@ -63,7 +67,7 @@ helpMenu(){
 
 showFavorites(){
 
-    if [[ ! -f ${FAV_FILE} ]];then
+    if [[ ! -f ${FAV_FILE} ]]; then
 
         echo -e "${RED}Add favorites in ${FAV_FILE}${RC}"
         exit 1
@@ -73,7 +77,7 @@ showFavorites(){
 
     FAV_CHAT_ID="$( < "${FAV_FILE}" )"
 
-    if [[ ! ${FAV_CHAT_ID} ]];then
+    if [[ ! ${FAV_CHAT_ID} ]]; then
 
         echo -e "${RED}Add favorites in ${FAV_FILE}${RC} (format: <chat id>@<username>)"
         exit 1
@@ -81,7 +85,7 @@ showFavorites(){
     fi
 
 
-    for FAV in $( < "${FAV_FILE}" );do
+    for FAV in $( < "${FAV_FILE}" ); do
 
         echo -e "\n${CYAN}\t ⭐ ${FAV}${RC}\n"
 
@@ -90,7 +94,7 @@ showFavorites(){
 }
 
 
-ENDPOINTS=( sendMessage sendDocument getUpdates )
+ENDPOINTS=( 'sendMessage' 'sendDocument' 'getUpdates' )
 
 
 sendMessage(){
@@ -107,14 +111,26 @@ sendMessage(){
 }
 
 
-sendDocument(){
+checkDocument() {
+
+	[[ ! ${INPUT} ]] && { echo -e "${RED}Enter the path to a document!${RC}"; exit 1; }
+	[[ ! -e ${INPUT} ]] && { echo -e "${RED}Can't find your document!${RC}"; exit 1; }
+	DOCUMENT=${INPUT}
+
+}
+
+sendDocument() {
 
     ENDPOINT=${ENDPOINTS[1]}
+
+	passFavID
 
     curl\
         --silent "${TG_API_URL}${TG_TOKEN}/${ENDPOINT}"\
         --form document=@"${DOCUMENT}"\
         --form chat_id="${CHAT_ID}"
+
+
 }
 
 getUpdate(){
@@ -127,14 +143,11 @@ getUpdate(){
 }
 
 
-checkEnv
-
-
 passFavID(){
 
-    if [[ ! ${CHAT_ID} ]];then
+    if [[ ! ${CHAT_ID} ]]; then
 
-	## Chat ID list in favorites must be <chat-id>@<alias>
+		## Chat ID list in favorites must be <chat-id>@<alias>
 		CHAT_ID=$( cut -d '@' -f 1 < "${FAV_FILE}" | head -n1)
 
 		if [[ -z "${CHAT_ID}" ]]; then
@@ -147,87 +160,70 @@ passFavID(){
 }
 
 
-if [[ ! "${OPTION}" ]];then
 
-    helpMenu
-    exit 1
+sendText() {
 
-fi
+	[[ ! ${INPUT} ]] && { echo -e "${RED}Enter a text!${RC}"; exit 1; }
+	TEXT=${INPUT}
 
+	passFavID && sendMessage
 
-case ${OPTION} in
-
-    -d|--document)
-
-        if [[ ! ${INPUT} ]];then
-
-            echo -e "${RED}Enter the path to a document!${RC}"
-            exit 1
-
-        fi
+}
 
 
-        if [[ ! -e ${INPUT} ]];then
+sendInput() {
 
-            echo -e "${RED}Can't find your document!${RC}"
-            exit 1
+	if [[ ! "${OPTION}" ]]; then
 
-        fi
+	    helpMenu
+	    exit 1
 
-
-		passFavID
-
-        DOCUMENT=${INPUT}
-
-        sendDocument
-
-        ;;
+	fi
 
 
-    -f|--favorites)
+	case ${OPTION} in
 
-        showFavorites
+	    -d|--document) checkDocument && sendDocument ;;
+	    -f|--favorites) showFavorites ;;
+	    -h| --help) helpMenu ;;
+	    -t|--text)	sendText;;
+	    -u|--update) getUpdate ;;
+	    *) helpMenu ;;
 
-        ;;
+	esac
 
-
-    -h| --help)
-
-        helpMenu
-
-        ;;
-
-
-    -t|--text)
-
-        if [[ ! ${INPUT} ]];then
-
-            echo -e "${RED}Enter a text!${RC}"
-            exit 1
-
-        fi
+}
 
 
-		passFavID
+checkOutput() {
 
-        TEXT=${INPUT}
+	if [[ ${OPTION} == '-u' ]]; then
 
-        sendMessage
+		if sendInput; then
+			echo -e "\n${GREEN}ok!${RC}\n"
+		else
+			echo -e "\n${GREEN}Something went wrong!${RC}\n"
+			exit 1
+		fi
+	else
+		if [[ $( sendInput | jq '.ok' ) == 'true' ]]; then
+			echo -e "\n${GREEN}sent!${RC}\n"
+		else
+			echo -e "\n${GREEN}Something went wrong!${RC}\n"
+			exit 1
+		fi
 
-        ;;
+	fi
+
+}
 
 
-    -u|--update)
+main(){
 
-        getUpdate
+	defColors
+	checkEnv
+	checkOutput
 
-        ;;
+}
 
-
-    *)
-
-        helpMenu
-
-        ;;
-
-esac
+main
