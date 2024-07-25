@@ -202,14 +202,14 @@ checkOutput() {
 		if sendInput; then
 			echo -e "\n${GREEN}ok!${RC}\n"
 		else
-			echo -e "\n${GREEN}Something went wrong!${RC}\n"
+			echo -e "\n${RED}Something went wrong!${RC}\n"
 			exit 1
 		fi
 	else
 		if [[ $( sendInput | jq '.ok' ) == 'true' ]]; then
 			echo -e "\n${GREEN}sent!${RC}\n"
 		else
-			echo -e "\n${GREEN}Something went wrong!${RC}\n"
+			echo -e "\n${RED}Something went wrong!${RC}\n"
 			exit 1
 		fi
 
