@@ -26,70 +26,70 @@ FAV_FILE="${HOME}/.config/telebash/favorites.txt"
 
 checkEnv(){
 
-    REQUIREMENTS=( 'curl' )
+	REQUIREMENTS=( 'curl' )
 
-    for REQUIREMENT in "${REQUIREMENTS[@]}"; do
+	for REQUIREMENT in "${REQUIREMENTS[@]}"; do
 
-        if ! command -v "${REQUIREMENT}" > /dev/null; then
+		if ! command -v "${REQUIREMENT}" > /dev/null; then
 
-            echo -e "${RED}${REQUIREMENT} not found!${BOLD}${RC}\n"
-            exit 1
+			echo -e "${RED}${REQUIREMENT} not found!${BOLD}${RC}\n"
+			exit 1
 
-        fi
+		fi
 
-    done
+	done
 
-    if [[ ! -f ${TG_TOKEN_FILE} || ! ${TG_TOKEN} ]]; then
+	if [[ ! -f ${TG_TOKEN_FILE} || ! ${TG_TOKEN} ]]; then
 
-        echo -e "\n ${RED}Token is missing!\n ${RC}\n Get one with ${CYAN}@botfather${RC} on Telegram.\n"
-        exit 1
+		echo -e "\n ${RED}Token is missing!\n ${RC}\n Get one with ${CYAN}@botfather${RC} on Telegram.\n"
+		exit 1
 
-    fi
+	fi
 
 }
 
 
 helpMenu(){
 
-    echo -e "\n\
+	echo -e "\n\
   ${UL}Usage:${RC}\n\n\
-    ./telebash <options> <input> <chat ID>\n\n\
-    To get a chat ID, run this script with '--update'.\n\n\
+	./telebash <options> <input> <chat ID>\n\n\
+	To get a chat ID, run this script with '--update'.\n\n\
   ${UL}Options:${RC}\n\n\
-    -d, --document      <path>          Send a document.\n\
-    -f, --favorites                     Show your favorites chat ID.
-    -h, --help                          Display this help.\n\
-    -t, --text          <text>          Send a text message.\n\
-    -u, --update                        Get the latest infos (groups, messages...)\n"
+	-d, --document	  <path>		  Send a document.\n\
+	-f, --favorites					 Show your favorites chat ID.
+	-h, --help						  Display this help.\n\
+	-t, --text		  <text>		  Send a text message.\n\
+	-u, --update						Get the latest infos (groups, messages...)\n"
 
 }
 
 
 showFavorites(){
 
-    if [[ ! -f ${FAV_FILE} ]]; then
+	if [[ ! -f ${FAV_FILE} ]]; then
 
-        echo -e "${RED}Add favorites in ${FAV_FILE}${RC}"
-        exit 1
+		echo -e "${RED}Add favorites in ${FAV_FILE}${RC}"
+		exit 1
 
-    fi
-
-
-    FAV_CHAT_ID="$( < "${FAV_FILE}" )"
-
-    if [[ ! ${FAV_CHAT_ID} ]]; then
-
-        echo -e "${RED}Add favorites in ${FAV_FILE}${RC} (format: <chat id>@<username>)"
-        exit 1
-
-    fi
+	fi
 
 
-    for FAV in $( < "${FAV_FILE}" ); do
+	FAV_CHAT_ID="$( < "${FAV_FILE}" )"
 
-        echo -e "\n${CYAN}\t ⭐ ${FAV}${RC}\n"
+	if [[ ! ${FAV_CHAT_ID} ]]; then
 
-    done
+		echo -e "${RED}Add favorites in ${FAV_FILE}${RC} (format: <chat id>@<username>)"
+		exit 1
+
+	fi
+
+
+	for FAV in $( < "${FAV_FILE}" ); do
+
+		echo -e "\n${CYAN}\t ⭐ ${FAV}${RC}\n"
+
+	done
 
 }
 
@@ -99,14 +99,14 @@ ENDPOINTS=( 'sendMessage' 'sendDocument' 'getUpdates' )
 
 sendMessage(){
 
-    ENDPOINT=${ENDPOINTS[0]}
-    PARSE_MODE="markdown" ## Valid options are "html" or "markdown"
+	ENDPOINT=${ENDPOINTS[0]}
+	PARSE_MODE="markdown" ## Valid options are "html" or "markdown"
 
-    curl\
-        --silent "${TG_API_URL}${TG_TOKEN}/${ENDPOINT}"\
-        --form chat_id="${CHAT_ID}"\
-        --form parse_mode="${PARSE_MODE}"\
-        --form text="${TEXT}"
+	curl\
+		--silent "${TG_API_URL}${TG_TOKEN}/${ENDPOINT}"\
+		--form chat_id="${CHAT_ID}"\
+		--form parse_mode="${PARSE_MODE}"\
+		--form text="${TEXT}"
 
 }
 
@@ -121,41 +121,41 @@ checkDocument() {
 
 sendDocument() {
 
-    ENDPOINT=${ENDPOINTS[1]}
+	ENDPOINT=${ENDPOINTS[1]}
 
 	passFavID
 
-    curl\
-        --silent "${TG_API_URL}${TG_TOKEN}/${ENDPOINT}"\
-        --form document=@"${DOCUMENT}"\
-        --form chat_id="${CHAT_ID}"
+	curl\
+		--silent "${TG_API_URL}${TG_TOKEN}/${ENDPOINT}"\
+		--form document=@"${DOCUMENT}"\
+		--form chat_id="${CHAT_ID}"
 
 
 }
 
 getUpdate(){
 
-    ENDPOINT=${ENDPOINTS[2]}
+	ENDPOINT=${ENDPOINTS[2]}
 
-    curl\
-        --silent "${TG_API_URL}${TG_TOKEN}/${ENDPOINT}"
+	curl\
+		--silent "${TG_API_URL}${TG_TOKEN}/${ENDPOINT}"
 
 }
 
 
 passFavID(){
 
-    if [[ ! ${CHAT_ID} ]]; then
+	if [[ ! ${CHAT_ID} ]]; then
 
 		## Chat ID list in favorites must be <chat-id>@<alias>
 		CHAT_ID=$( cut -d '@' -f 1 < "${FAV_FILE}" | head -n1)
 
 		if [[ -z "${CHAT_ID}" ]]; then
-            echo -e "${RED}Enter a chat ID! (No favorites found!)${RC}"
-            exit 1
+			echo -e "${RED}Enter a chat ID! (No favorites found!)${RC}"
+			exit 1
 		fi
 
-    fi
+	fi
 
 }
 
@@ -175,20 +175,20 @@ sendInput() {
 
 	if [[ ! "${OPTION}" ]]; then
 
-	    helpMenu
-	    exit 1
+		helpMenu
+		exit 1
 
 	fi
 
 
 	case ${OPTION} in
 
-	    -d|--document) checkDocument && sendDocument ;;
-	    -f|--favorites) showFavorites ;;
-	    -h| --help) helpMenu ;;
-	    -t|--text)	sendText;;
-	    -u|--update) getUpdate ;;
-	    *) helpMenu ;;
+		-d|--document) checkDocument && sendDocument ;;
+		-f|--favorites) showFavorites ;;
+		-h| --help) helpMenu ;;
+		-t|--text)	sendText;;
+		-u|--update) getUpdate ;;
+		*) helpMenu ;;
 
 	esac
 
