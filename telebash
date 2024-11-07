@@ -56,11 +56,11 @@ helpMenu(){
 	./telebash <options> <input> <chat ID>\n\n\
 	To get a chat ID, run this script with '--update'.\n\n\
   ${UL}Options:${RC}\n\n\
-	-d, --document	  <path>		  Send a document.\n\
-	-f, --favorites					 Show your favorites chat ID.
-	-h, --help						  Display this help.\n\
-	-t, --text		  <text>		  Send a text message.\n\
-	-u, --update						Get the latest infos (groups, messages...)\n"
+	-d, --document	<path>		Send a document.\n\
+	-f, --favorites			Show your favorites chat ID.
+	-h, --help			Display this help.\n\
+	-t, --text	<text>		Send a text message.\n\
+	-u, --update			Get the latest infos (groups, messages...)\n"
 
 }
 
@@ -195,24 +195,35 @@ sendInput() {
 }
 
 
-checkOutput() {
+err(){
+	echo -e "\n${RED}Something went wrong!${RC}\n"
+	exit 1
+}
 
-	if [[ ${OPTION} == '-u' ]]; then
+send(){
 
-		if sendInput; then
-			echo -e "\n${GREEN}ok!${RC}\n"
-		else
-			echo -e "\n${RED}Something went wrong!${RC}\n"
-			exit 1
+	OUT=$(sendInput)
+	if [[ $OPTION == '-t' || $OPTION == '-d' ]]; then
+		SENT=$(echo $OUT | jq -r '.ok')
+		if [[ -z $OUT || -z $SENT ]]; then
+			echo "${RED}Something went wrong!$RC"
 		fi
 	else
-		if [[ $( sendInput | jq '.ok' ) == 'true' ]]; then
-			echo -e "\n${GREEN}sent!${RC}\n"
-		else
-			echo -e "\n${RED}Something went wrong!${RC}\n"
-			exit 1
-		fi
+		echo "$OUT"
+	fi
 
+}
+
+checkOutput() {
+
+	if [[ $OPTION == '-t' || $OPTION == '-d' || $OPTION == '-u' ]]; then
+		if ! send; then
+			err
+		fi
+	else
+		if ! send; then
+			err
+		fi
 	fi
 
 }
